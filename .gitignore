@@ -39,3 +39,8 @@ Thumbs.db
 NeuroAI_AI_Integration_Package/
 NeuroAI_Full_Production_Bundle/
 
+# Test & Verification Screenshots
+hosted*.png
+local*.png
+
+
