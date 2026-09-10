@@ -80,13 +80,25 @@ CLINICAL_EXPLANATIONS = {
 }
 
 class BrainTumorClassifier:
+    def _find_neuro_ai_path(self) -> str:
+        candidates = [
+            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "NeuroAI")),       # in Docker: /app/NeuroAI
+            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "NeuroAI")), # local workspace
+            os.path.join(os.getcwd(), "NeuroAI"),
+            "/app/NeuroAI",
+        ]
+        for p in candidates:
+            if os.path.exists(p):
+                return p
+        return candidates[0]
+
     def __init__(self):
         self.model_api_url = os.getenv("MODEL_API_URL", "http://localhost:8080/api/predict")
         self.timeout = float(os.getenv("MODEL_API_TIMEOUT", "120.0"))
         self.model_version = "NeuroAI-DenseNet121+SwinUNet-v2.0"
         self.is_mock = False
-        self.neuro_ai_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "NeuroAI"))
-        logger.info(f"Initialized BrainTumorClassifier (target API: {self.model_api_url}, timeout: {self.timeout}s)")
+        self.neuro_ai_path = self._find_neuro_ai_path()
+        logger.info(f"Initialized BrainTumorClassifier (target API: {self.model_api_url}, NeuroAI path: {self.neuro_ai_path})")
 
     def _pil_to_base64(self, img: Image.Image) -> str:
         buf = io.BytesIO()
@@ -223,12 +235,14 @@ class BrainTumorClassifier:
         Attempts direct in-process inference with the NeuroAI deep learning pipeline
         if running in the same environment and PyTorch models are available.
         """
-        if not os.path.exists(self.neuro_ai_path):
+        target_path = self._find_neuro_ai_path()
+        if not os.path.exists(target_path):
+            logger.debug(f"Direct local pipeline path does not exist: {target_path}")
             return None
 
         import sys
-        if self.neuro_ai_path not in sys.path:
-            sys.path.insert(0, self.neuro_ai_path)
+        if target_path not in sys.path:
+            sys.path.insert(0, target_path)
 
         try:
             from Neuro_AI_System import run_diagnosis, CLINICAL_EXPLANATIONS as SYSTEM_EXPLANATIONS
@@ -243,7 +257,7 @@ class BrainTumorClassifier:
                 tmp_path = tmp.name
 
             try:
-                diag_res = run_diagnosis(tmp_path, self.neuro_ai_path)
+                diag_res = run_diagnosis(tmp_path, target_path)
                 pred_cls = diag_res.get('pred_class', 'NOTUMOR')
                 conf_val = diag_res.get('conf_percent', 95.0)
                 seg_pix = diag_res.get('segmented_pixels', 0)
@@ -263,10 +277,10 @@ class BrainTumorClassifier:
                     "segmented_pixels": int(seg_pix),
                     "explanation_text": SYSTEM_EXPLANATIONS.get(pred_cls, CLINICAL_EXPLANATIONS.get(pred_cls, "")),
                     "images": {
-                        "bbox": self._file_to_base64(os.path.join(self.neuro_ai_path, 'complete_test_bbox_output.png')),
-                        "seg": self._file_to_base64(os.path.join(self.neuro_ai_path, 'complete_test_seg_output.png')),
-                        "combined": self._file_to_base64(os.path.join(self.neuro_ai_path, 'complete_test_combined_output.png')),
-                        "five_panel": self._file_to_base64(os.path.join(self.neuro_ai_path, 'complete_diagnosis_5panel_output.png')),
+                        "bbox": self._file_to_base64(os.path.join(target_path, 'complete_test_bbox_output.png')),
+                        "seg": self._file_to_base64(os.path.join(target_path, 'complete_test_seg_output.png')),
+                        "combined": self._file_to_base64(os.path.join(target_path, 'complete_test_combined_output.png')),
+                        "five_panel": self._file_to_base64(os.path.join(target_path, 'complete_diagnosis_5panel_output.png')),
                     }
                 }
             finally:
@@ -276,7 +290,7 @@ class BrainTumorClassifier:
                     except Exception:
                         pass
         except Exception as e:
-            logger.debug(f"Direct local pipeline inference unavailable ({e})")
+            logger.warning(f"Direct local pipeline inference encountered error: {e}", exc_info=True)
             return None
 
     def predict(self, image_bytes: bytes, filename: str = "mri_scan.png") -> Dict[str, Any]:

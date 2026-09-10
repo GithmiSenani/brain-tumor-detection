@@ -259,12 +259,28 @@ def load_local_models():
                     cfg_p = os.path.join(root, f)
                     break
 
-    # 2. Locate Swin-UNet & YOLO weights
+    # 2. Locate Swin-UNet & YOLO weights (auto-download from HF Hub if missing on remote deployment)
     swin_p = os.path.join(BASE_DIR, 'output_finetune', 'best_model.pth')
     if not os.path.exists(swin_p):
         swin_p = os.path.join(BASE_DIR, 'best_model.pth')
         
     yolo_p = os.path.join(BASE_DIR, 'yolo_best.pt')
+
+    hf_repo_id = os.environ.get("HF_MODEL_REPO", "PramudithaN/brain-tumor-models")
+    hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_TOKEN")
+
+    if not os.path.exists(swin_p) or not os.path.exists(yolo_p) or not all(os.path.exists(os.path.join(BASE_DIR, f"densenet121_{c.lower()}.pth")) for c in CLASSES):
+        print(f"[*] Missing model weights detected locally. Attempting auto-download from Hugging Face Hub ({hf_repo_id})...")
+        try:
+            from huggingface_hub import hf_hub_download
+            if not os.path.exists(swin_p):
+                print(f"[*] Downloading Swin-UNet (best_model.pth) from {hf_repo_id}...")
+                swin_p = hf_hub_download(repo_id=hf_repo_id, filename="best_model.pth", token=hf_token)
+            if not os.path.exists(yolo_p):
+                print(f"[*] Downloading YOLOv8 (yolo_best.pt) from {hf_repo_id}...")
+                yolo_p = hf_hub_download(repo_id=hf_repo_id, filename="yolo_best.pt", token=hf_token)
+        except Exception as err:
+            print(f"[!] Error auto-downloading from Hugging Face: {err}")
 
     print(f"[*] Config YAML  : {cfg_p}")
     print(f"[*] Swin-UNet Pt : {swin_p}")
@@ -280,6 +296,14 @@ def load_local_models():
         if not os.path.exists(ckpt_p):
             ckpt_p = os.path.join(EXTRACTED_DIR, ckpt_name)
             
+        if not os.path.exists(ckpt_p):
+            try:
+                from huggingface_hub import hf_hub_download
+                print(f"[*] Downloading specialist weights {ckpt_name} from {hf_repo_id}...")
+                ckpt_p = hf_hub_download(repo_id=hf_repo_id, filename=ckpt_name, token=hf_token)
+            except Exception as e:
+                print(f"[!] Warning: Failed to download specialist {ckpt_name}: {e}")
+
         m = build_specialist_model().to(device)
         if os.path.exists(ckpt_p):
             m.load_state_dict(torch.load(ckpt_p, map_location=device, weights_only=False))

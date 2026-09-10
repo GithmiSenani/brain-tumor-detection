@@ -38,7 +38,7 @@ def deploy_backend(space_id="PramudithaN/brain-tumor-backend", token=None):
         except Exception as ce:
             print(f"[!] Note: {ce}")
 
-    # Upload the backend folder to the Space repository
+    # Upload the backend application to the root of the Space
     print(f"[*] Uploading backend files to Space: {space_id} ...")
     api.upload_folder(
         folder_path=backend_dir,
@@ -47,7 +47,21 @@ def deploy_backend(space_id="PramudithaN/brain-tumor-backend", token=None):
         commit_message="Deploy updated FastAPI backend to Hugging Face Space",
         ignore_patterns=["__pycache__/*", ".env", "*.pyc"]
     )
-    print(f"\n[+] Successfully deployed backend to Hugging Face Space!")
+
+    # Upload the NeuroAI pipeline module to NeuroAI/ in the Space
+    neuro_ai_dir = os.path.join(repo_dir, "NeuroAI")
+    if os.path.exists(neuro_ai_dir):
+        print(f"[*] Uploading NeuroAI pipeline to Space '{space_id}/NeuroAI'...")
+        api.upload_folder(
+            folder_path=neuro_ai_dir,
+            path_in_repo="NeuroAI",
+            repo_id=space_id,
+            repo_type="space",
+            commit_message="Deploy updated NeuroAI inference engine and configs",
+            ignore_patterns=["*.pth", "*.pt", "*.zip", "__pycache__/*", "*.png", "output_finetune/*.pth"]
+        )
+
+    print(f"\n[+] Successfully deployed backend & NeuroAI pipeline to Hugging Face Space!")
     print(f"[+] Live Space URL: https://huggingface.co/spaces/{space_id}")
     return True
 
