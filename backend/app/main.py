@@ -29,21 +29,28 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS configuration
+# CORS configuration - Allow local dev and hosted web clients
 origins = [
-    "http://localhost:5173",  # Vite default
-    "http://localhost:3000",  # Common frontend port
+    "http://localhost:5173",
+    "http://localhost:3000",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:3000",
+    "*",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+from fastapi.responses import RedirectResponse
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/docs")
 
 # In-memory IP rate limiter for predictions to prevent abuse
 prediction_rate_limit = defaultdict(list)
