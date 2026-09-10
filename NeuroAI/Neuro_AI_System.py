@@ -84,70 +84,70 @@ def build_specialist_model():
 CLINICAL_EXPLANATIONS = {
     'GLIOMA': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Grad-CAM Localization: Focuses on infiltrative, high-density cell structures in subcortical white matter.\n"
-        "  • Swin-UNet Segmentation: Delineates irregular, ill-defined boundary margins with surrounding peritumoral edema.\n"
-        "  • Clinical Recommendation: High mass effect index; suggest contrast-enhanced T1w and perfusion MRI for grading.\n\n"
+        "  • Focal Heatmap Localization: High focal intensity across infiltrative, high-density cell structures in subcortical white matter.\n"
+        "  • Tumor Boundary & Margin Delineation: Delineates irregular, ill-defined infiltrative boundary margins with surrounding peritumoral edema.\n"
+        "  • Clinical Recommendation: Mass effect observed; recommend contrast-enhanced T1w and perfusion MRI for histopathological grading.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI identified a growth originating from supportive brain tissue (glial cells).\n"
-        "  • Heatmap Explanation: The red outline and warm highlights mark the specific region where tissue structure differs.\n"
-        "  • Suggested Next Steps: Discuss these findings with your neurologist or neurosurgeon for personalized care."
+        "  • What This Means: The scan identified an area of abnormal cell growth originating from supportive brain tissue (glial cells).\n"
+        "  • Heatmap Explanation: The red outline and warm colored highlights show doctors the exact location where tissue structure differs from normal brain tissue.\n"
+        "  • Suggested Next Steps: Discuss these findings with your neurologist or neurosurgeon to guide proper care and treatment planning."
     ),
     'MENINGIOMA': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Grad-CAM Localization: Concentrates on extra-axial, well-circumscribed dural attachment zones along the meninges.\n"
-        "  • Swin-UNet Segmentation: Isolates smooth, uniform tumor boundaries with characteristic dural tail enhancement.\n"
-        "  • Clinical Recommendation: Typically extra-axial lesion; assess adjacent dural venous sinus patency.\n\n"
+        "  • Focal Heatmap Localization: Concentrates on extra-axial, well-circumscribed dural attachment zones along the meninges.\n"
+        "  • Tumor Boundary & Margin Delineation: Isolates smooth, uniform tumor boundaries with characteristic dural tail enhancement.\n"
+        "  • Clinical Recommendation: Morphologically consistent with extra-axial meningeal lesion; assess adjacent dural venous sinus patency.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI detected a growth arising from the protective outer layers (meninges) surrounding the brain.\n"
-        "  • Heatmap Explanation: The red border highlights a clear, well-defined lesion area separated from deep brain tissue.\n"
+        "  • What This Means: The scan detected a growth arising from the protective outer membranes (meninges) surrounding the brain.\n"
+        "  • Heatmap Explanation: The red border highlights a clear, well-defined lesion area that is typically separated from the inner brain tissue.\n"
         "  • Suggested Next Steps: Schedule a consultation with your doctor to review monitoring options or treatment."
     ),
     'PITUITARY': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Grad-CAM Localization: Heavily localizes within the sellar and suprasellar fossa at the skull base.\n"
-        "  • Swin-UNet Segmentation: Delineates focal mass enhancement adjacent to optic chiasm anatomical boundaries.\n"
-        "  • Clinical Recommendation: Order endocrinological hormone panel and thin-slice sagittal pituitary MRI.\n\n"
+        "  • Focal Heatmap Localization: Pronounced focal localization within the sellar and suprasellar fossa at the skull base.\n"
+        "  • Tumor Boundary & Margin Delineation: Delineates focal mass enhancement adjacent to optic chiasm anatomical boundaries.\n"
+        "  • Clinical Recommendation: Order endocrinological hormone panel and thin-slice dynamic contrast sagittal pituitary MRI.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI located a growth near the pituitary gland (which controls body hormones).\n"
-        "  • Heatmap Explanation: The highlighted region points to the central area at the base of the brain.\n"
-        "  • Suggested Next Steps: Consult an endocrinologist or neurosurgeon for hormone evaluations and vision checks."
+        "  • What This Means: The scan located a growth near the pituitary gland (which regulates essential body hormones).\n"
+        "  • Heatmap Explanation: The highlighted region points to a specific focal area at the base of the brain.\n"
+        "  • Suggested Next Steps: Consult an endocrinologist or neurosurgeon for hormone evaluations and routine vision assessments."
     ),
     'NOTUMOR': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Grad-CAM Localization: Shows uniform baseline activation across symmetrical cerebral parenchyma.\n"
-        "  • Swin-UNet Segmentation: No pathologic tissue boundaries or abnormal contrast enhancement detected.\n"
-        "  • Clinical Recommendation: Normal MRI scan; no evidence of mass effect, midline shift, or focal lesion.\n\n"
+        "  • Focal Heatmap Localization: Shows uniform, symmetrical baseline parenchymal distribution without focal signal abnormality.\n"
+        "  • Tumor Boundary & Margin Delineation: No abnormal tissue boundaries, pathologic mass, or abnormal contrast enhancement detected.\n"
+        "  • Clinical Recommendation: Normal brain MRI scan; no evidence of intracranial mass effect, midline shift, or focal lesion.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI analyzed your brain MRI scan and confirmed healthy brain tissue with NO tumor detected.\n"
-        "  • Heatmap Explanation: The scan shows balanced, uniform brain features with no abnormal spots.\n"
-        "  • Suggested Next Steps: Share these reassuring results with your primary care physician during your checkup."
+        "  • What This Means: The brain MRI scan shows healthy, normal brain tissue with NO tumor detected.\n"
+        "  • Heatmap Explanation: The scan shows balanced, uniform brain features with no abnormal spots or highlights.\n"
+        "  • Suggested Next Steps: Share these reassuring results with your primary care physician during your routine checkup."
     ),
     'UNRECOGNIZED_TUMOR': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
-        "⚠️ DIAGNOSTIC STATUS: UNRECOGNIZED / ATYPICAL BRAIN LESION DETECTED\n"
+        "⚠️ DIAGNOSTIC STATUS: ATYPICAL / UNCLASSIFIED BRAIN LESION DETECTED\n"
         "-----------------------------------------------------------------\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Lesion Segmentation: YOLOv8 and Swin-UNet isolated an abnormal focal brain lesion/mass.\n"
-        "  • Multi-Specialist Classifier: Deep feature signatures do NOT reliably match the 3 trained tumor classes (Glioma, Meningioma, Pituitary).\n"
-        "  • Differential Considerations: Atypical or non-standard neoplasm (e.g., metastatic carcinoma, schwannoma, ependymoma, central neurocytoma, craniopharyngioma) or non-neoplastic focal lesion.\n"
+        "  • Tumor Boundary & Margin Delineation: Automated delineation isolated an abnormal focal brain lesion/mass.\n"
+        "  • Pathological Feature Pattern: Morphological characteristics and intensity profile do NOT conform to standard primary tumor profiles (Glioma, Meningioma, Pituitary).\n"
+        "  • Differential Considerations: Atypical or secondary intracranial neoplasm (e.g., metastatic lesion, schwannoma, ependymoma, central neurocytoma, craniopharyngioma) or non-neoplastic focal lesion.\n"
         "  • Clinical Recommendation: Order urgent multi-parametric contrast MRI (axial/sagittal/coronal T1+C, T2/FLAIR, DWI/ADC, MR Perfusion) and neurosurgical consultation for biopsy/histopathological verification.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI system detected an abnormal growth/lesion in your brain scan, but it cannot identify the exact subtype because it does NOT match the 3 standard tumor categories it was trained to recognize.\n"
-        "  • Heatmap Explanation: The bounding box, red outline, and heatmap highlight the exact location where abnormal tissue was detected.\n"
+        "  • What This Means: An abnormal focal area or growth was detected in your brain scan, but it does not match standard typical tumor profiles.\n"
+        "  • Heatmap Explanation: The localization box, red margin outline, and heatmap mark the exact focal region where the unusual tissue was identified.\n"
         "  • Suggested Next Steps: ⚠️ PLEASE MEET AND CONSULT YOUR DOCTOR OR SPECIALIST (Neurologist / Neurosurgeon) AS SOON AS POSSIBLE. A qualified physician must review this scan in person to provide an accurate diagnosis and personalized medical guidance."
     )
 }
@@ -238,9 +238,16 @@ def load_input_file(file_path):
         return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
 # -----------------------------------------------------------------------------
-# 5. Local Model Initializer
+# 5. Local Model Initializer (Cached in Memory)
 # -----------------------------------------------------------------------------
+_GLOBAL_PIPELINE = None
+_GLOBAL_SPECIALISTS = None
+
 def load_local_models():
+    global _GLOBAL_PIPELINE, _GLOBAL_SPECIALISTS
+    if _GLOBAL_PIPELINE is not None and _GLOBAL_SPECIALISTS is not None:
+        return _GLOBAL_PIPELINE, _GLOBAL_SPECIALISTS
+
     print(f"[*] Running on device: {device}")
     
     # 1. Locate YAML config
@@ -282,7 +289,9 @@ def load_local_models():
         m.eval()
         specialists[cls] = m
 
-    return pipeline, specialists
+    _GLOBAL_PIPELINE = pipeline
+    _GLOBAL_SPECIALISTS = specialists
+    return _GLOBAL_PIPELINE, _GLOBAL_SPECIALISTS
 
 # -----------------------------------------------------------------------------
 # 6. Main Prediction Logic & File Saver
@@ -400,23 +409,23 @@ def run_diagnosis(input_path, output_dir=None):
     axes[0].imshow(img_rgb[:, :, 0], cmap='gray'); axes[0].set_title('Original FLAIR Scan', fontweight='bold'); axes[0].axis('off')
     
     if pred_class == 'NOTUMOR':
-        axes[1].imshow(bbox_img); axes[1].set_title('No Bounding Box (Normal)', fontweight='bold', color='gray'); axes[1].axis('off')
-        axes[2].imshow(seg_img); axes[2].set_title('No Segmentation (Normal)', fontweight='bold', color='gray'); axes[2].axis('off')
-        axes[3].imshow(combined_img); axes[3].set_title('Clean MRI Scan', fontweight='bold', color='gray'); axes[3].axis('off')
-        axes[4].imshow(xai_overlay); axes[4].set_title('No Tumor (Grad-CAM N/A)', fontweight='bold', color='gray'); axes[4].axis('off')
-        plt.suptitle(f'NEURO AI DIAGNOSIS: NORMAL / NO TUMOR ({conf_percent:.1f}% Confidence)', fontsize=15, fontweight='bold', y=1.04)
+        axes[1].imshow(bbox_img); axes[1].set_title('Lesion Localization (None)', fontweight='bold', color='gray'); axes[1].axis('off')
+        axes[2].imshow(seg_img); axes[2].set_title('Margin Delineation (None)', fontweight='bold', color='gray'); axes[2].axis('off')
+        axes[3].imshow(combined_img); axes[3].set_title('Clean Brain Scan', fontweight='bold', color='gray'); axes[3].axis('off')
+        axes[4].imshow(xai_overlay); axes[4].set_title('Focal Heatmap (Normal)', fontweight='bold', color='gray'); axes[4].axis('off')
+        plt.suptitle(f'CLINICAL MRI DIAGNOSIS: NORMAL / NO TUMOR ({conf_percent:.1f}% Confidence)', fontsize=15, fontweight='bold', y=1.04)
     elif pred_class == 'UNRECOGNIZED_TUMOR':
-        axes[1].imshow(bbox_img); axes[1].set_title('YOLO Lesion Box', fontweight='bold', color='darkorange'); axes[1].axis('off')
-        axes[2].imshow(seg_img); axes[2].set_title('Swin-UNet Segmentation', fontweight='bold', color='red'); axes[2].axis('off')
-        axes[3].imshow(combined_img); axes[3].set_title('Combined Lesion View', fontweight='bold', color='purple'); axes[3].axis('off')
-        axes[4].imshow(xai_overlay); axes[4].set_title('Explainable AI (Grad-CAM)', fontweight='bold', color='darkred'); axes[4].axis('off')
-        plt.suptitle('⚠️ NEURO AI DIAGNOSIS: UNRECOGNIZED TUMOR TYPE — CONSULT SPECIALIST / DOCTOR', fontsize=14, fontweight='bold', color='darkred', y=1.04)
+        axes[1].imshow(bbox_img); axes[1].set_title('Lesion Localization Box', fontweight='bold', color='darkorange'); axes[1].axis('off')
+        axes[2].imshow(seg_img); axes[2].set_title('Tumor Margin Delineation', fontweight='bold', color='red'); axes[2].axis('off')
+        axes[3].imshow(combined_img); axes[3].set_title('Combined Structural View', fontweight='bold', color='purple'); axes[3].axis('off')
+        axes[4].imshow(xai_overlay); axes[4].set_title('Diagnostic Focal Heatmap', fontweight='bold', color='darkred'); axes[4].axis('off')
+        plt.suptitle('⚠️ CLINICAL MRI DIAGNOSIS: ATYPICAL LESION — SPECIALIST CONSULTATION ADVISED', fontsize=14, fontweight='bold', color='darkred', y=1.04)
     else:
-        axes[1].imshow(bbox_img); axes[1].set_title('YOLO Bounding Box', fontweight='bold', color='green'); axes[1].axis('off')
-        axes[2].imshow(seg_img); axes[2].set_title('Swin-UNet Red Line', fontweight='bold', color='red'); axes[2].axis('off')
-        axes[3].imshow(combined_img); axes[3].set_title('Combined Display', fontweight='bold', color='purple'); axes[3].axis('off')
-        axes[4].imshow(xai_overlay); axes[4].set_title('Explainable AI (Grad-CAM)', fontweight='bold', color='darkred'); axes[4].axis('off')
-        plt.suptitle(f'NEURO AI DIAGNOSIS: {pred_class} ({conf_percent:.1f}% Confidence)', fontsize=15, fontweight='bold', y=1.04)
+        axes[1].imshow(bbox_img); axes[1].set_title('Lesion Localization Box', fontweight='bold', color='green'); axes[1].axis('off')
+        axes[2].imshow(seg_img); axes[2].set_title('Tumor Margin Delineation', fontweight='bold', color='red'); axes[2].axis('off')
+        axes[3].imshow(combined_img); axes[3].set_title('Combined Structural View', fontweight='bold', color='purple'); axes[3].axis('off')
+        axes[4].imshow(xai_overlay); axes[4].set_title('Diagnostic Focal Heatmap', fontweight='bold', color='darkred'); axes[4].axis('off')
+        plt.suptitle(f'CLINICAL MRI DIAGNOSIS: {pred_class} ({conf_percent:.1f}% Confidence)', fontsize=15, fontweight='bold', y=1.04)
 
     plt.tight_layout()
     fig_path = os.path.join(output_dir, 'complete_diagnosis_5panel_output.png')

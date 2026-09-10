@@ -63,11 +63,13 @@ def enforce_rate_limit(ip: str):
 
 @app.get("/api/health")
 def health_check():
+    model_status = classifier.get_model_status()
     return {
         "status": "healthy",
         "supabase_connected": records_handler.is_supabase_enabled(),
         "model_loaded": not classifier.is_mock,
-        "model_version": classifier.model_version
+        "model_version": classifier.model_version,
+        "model_pipeline": model_status
     }
 
 @app.post("/api/predict")

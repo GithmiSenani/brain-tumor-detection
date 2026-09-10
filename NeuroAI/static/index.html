@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuro AI — Brain MRI Diagnostic & Explainable System</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0B0F19;
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent-blue: #3B82F6;
+            --accent-cyan: #06B6D4;
+            --accent-purple: #8B5CF6;
+            --accent-emerald: #10B981;
+            --accent-rose: #F43F5E;
+            --text-main: #F9FAFB;
+            --text-muted: #9CA3AF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Header Navigation */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 28px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFFFFF, #93C5FD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .badge-tag {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60A5FA;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        /* Upload Section Card */
+        .upload-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #E0E7FF;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(99, 102, 241, 0.4);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .drop-icon {
+            font-size: 52px;
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .drop-zone:hover .drop-icon {
+            transform: scale(1.1);
+        }
+
+        .drop-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .drop-subtext {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Sample Selector Buttons */
+        .samples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .sample-btn {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px 18px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+        }
+
+        .sample-btn:hover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Selected Preview & Run Bar */
+        .preview-bar {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon {
+            font-size: 28px;
+            color: var(--accent-emerald);
+        }
+
+        .btn-run {
+            background: linear-gradient(135deg, var(--accent-emerald), #059669);
+            color: white;
+            border: none;
+            padding: 14px 36px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.6);
+        }
+
+        /* Loading Spinner Overlay */
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .spinner {
+            width: 65px;
+            height: 65px;
+            border: 5px solid rgba(59, 130, 246, 0.2);
+            border-top: 5px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Results Container */
+        .results-container {
+            display: none;
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60A5FA;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Image Display Grid */
+        .image-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .image-card img {
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Report Box Styles */
+        .report-box {
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .report-box.radiologist {
+            background: rgba(30, 58, 138, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        .report-box.patient {
+            background: rgba(6, 78, 59, 0.3);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .report-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 10px;
+            color: #E2E8F0;
+        }
+
+        /* Alert Banners */
+        .alert-banner {
+            border-radius: 18px;
+            padding: 22px 26px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+        }
+
+        .alert-banner.warning {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.25), rgba(185, 28, 28, 0.15));
+            border: 1.5px solid rgba(239, 68, 68, 0.6);
+        }
+
+        .alert-banner.warning .alert-icon {
+            color: #F87171;
+        }
+
+        .alert-banner.warning .alert-title {
+            color: #FCA5A5;
+        }
+
+        .alert-banner.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.15));
+            border: 1.5px solid rgba(16, 185, 129, 0.6);
+        }
+
+        .alert-banner.success .alert-icon {
+            color: #34D399;
+        }
+
+        .alert-banner.success .alert-title {
+            color: #6EE7B7;
+        }
+
+        .alert-banner.info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.15));
+            border: 1.5px solid rgba(59, 130, 246, 0.6);
+        }
+
+        .alert-banner.info .alert-icon {
+            color: #60A5FA;
+        }
+
+        .alert-banner.info .alert-title {
+            color: #93C5FD;
+        }
+
+        .alert-icon {
+            font-size: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .alert-desc {
+            font-size: 0.92rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .navbar { flex-direction: column; gap: 12px; text-align: center; }
+            .preview-bar { flex-direction: column; text-align: center; }
+            .btn-run { width: 100%; justify-content: center; }
+            .alert-banner { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Navbar Header -->
+    <div class="navbar">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <div class="brand-text">
+                <h1>Neuro AI Diagnostic System</h1>
+                <p>Automated Brain Tumor Detection, Segmentation & Dual-Perspective XAI Guidance</p>
+            </div>
+        </div>
+        <div class="badge-tag">
+            <i class="fa-solid fa-microchip"></i> YOLOv8 + Swin-UNet + DenseNet-121
+        </div>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="upload-card">
+        <div class="section-title">
+            <i class="fa-solid fa-cloud-arrow-up" style="color: var(--accent-cyan);"></i>
+            Select or Upload Patient MRI Scan (PC or Phone)
+        </div>
+
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div class="drop-icon">
+                <i class="fa-solid fa-file-medical"></i>
+            </div>
+            <div class="drop-text">Drag & drop MRI file here or click to browse</div>
+            <div class="drop-subtext">Supports 2D images (.jpg, .png, .bmp) & 3D MRI slice files (.h5) from PC or Mobile Phone</div>
+            <button class="btn-upload" type="button" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">
+                <i class="fa-solid fa-folder-open"></i> Browse Files from Device
+            </button>
+            <input type="file" id="fileInput" accept=".h5,.jpg,.jpeg,.png,.bmp" onchange="handleFileSelect(this.files)">
+        </div>
+
+        <!-- Sample Selector -->
+        <div style="margin-top: 25px;">
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">
+                ⚡ Or test instantly with dataset sample images:
+            </div>
+            <div class="samples-grid">
+                <div class="sample-btn" onclick="selectSample('glioma', 'Glioma Test MRI (Te-glTr_0000.jpg)')">
+                    <span>🔴 Glioma Sample</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="sample-btn" onclick="selectSample('meningioma', 'Meningioma Test MRI (Te-meTr_0000.jpg)')">
+                    <span>🟢 Meningioma Sample</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="sample-btn" onclick="selectSample('pituitary', 'Pituitary Test MRI (Te-piTr_0000.jpg)')">
+                    <span>🟣 Pituitary Sample</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <div class="sample-btn" onclick="selectSample('notumor', 'No Tumor Test MRI (Te-noTr_0000.jpg)')">
+                    <span>⚪ No Tumor Sample</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Bar -->
+        <div class="preview-bar" id="previewBar">
+            <div class="file-info">
+                <div class="file-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <div id="selectedFileName" style="font-weight: 700; font-size: 1.05rem;">Selected MRI Image</div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted);">Ready for deep learning pipeline execution</div>
+                </div>
+            </div>
+            <button class="btn-run" onclick="runAnalysis()">
+                <i class="fa-solid fa-play"></i> Run AI Diagnosis
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-container" id="loadingSpinner">
+        <div class="spinner"></div>
+        <h3 style="font-size: 1.2rem; font-weight: 700;">Running Diagnostic AI Pipeline...</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 8px;">Processing multi-stage lesion localization, margin delineation, pathology classification & focal heatmap analysis...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-container" id="resultsContainer">
+        <!-- Dynamic Result Status Banner -->
+        <div class="alert-banner" id="diagnosisBanner">
+            <div class="alert-icon" id="bannerIcon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <div class="alert-title" id="bannerTitle">Diagnosis Ready</div>
+                <div class="alert-desc" id="bannerDesc">Diagnostic analysis completed.</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">📊 Executive 5-Panel View</button>
+            <button class="tab-btn" onclick="switchTab(1)">📸 Diagnostic Stage Outputs</button>
+            <button class="tab-btn" onclick="switchTab(2)">👨‍⚕️ Radiologist Report</button>
+            <button class="tab-btn" onclick="switchTab(3)">👤 Patient Guidance</button>
+        </div>
+
+        <!-- Tab 0: 5-Panel Overview -->
+        <div class="tab-content active" id="tab0">
+            <div class="image-card">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: #93C5FD;">🔍 Complete 5-Panel Clinical Diagnostic Summary</h3>
+                <img id="imgFivePanel" src="" alt="5-Panel Clinical Overview">
+            </div>
+        </div>
+
+        <!-- Tab 1: Stage Images -->
+        <div class="tab-content" id="tab1">
+            <div class="grid-3">
+                <div class="image-card">
+                    <h4 style="color: var(--accent-emerald);">Stage 1: Lesion Localization Box</h4>
+                    <img id="imgBbox" src="" alt="Lesion Localization Box">
+                </div>
+                <div class="image-card">
+                    <h4 style="color: var(--accent-rose);">Stage 2: Lesion Margin Delineation</h4>
+                    <img id="imgSeg" src="" alt="Lesion Margin Delineation">
+                </div>
+                <div class="image-card">
+                    <h4 style="color: var(--accent-purple);">Stage 3: Combined Anatomical Display</h4>
+                    <img id="imgCombined" src="" alt="Combined Anatomical Display">
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Radiologist Technical Report -->
+        <div class="tab-content" id="tab2">
+            <div class="report-box radiologist">
+                <div class="report-header" style="color: #60A5FA;">
+                    <i class="fa-user-md fa-solid"></i> Radiologist & Clinical Technical Report
+                </div>
+                <div class="report-content" id="radiologistReportText">
+                    <!-- Dynamic Radiologist Report -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Patient Friendly Guidance -->
+        <div class="tab-content" id="tab3">
+            <div class="report-box patient">
+                <div class="report-header" style="color: #34D399;">
+                    <i class="fa-heart-pulse fa-solid"></i> Patient & Family Guidance
+                </div>
+                <div class="report-content" id="patientReportText">
+                    <!-- Dynamic Patient Report -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedFileObj = null;
+    let selectedSampleId = null;
+
+    function handleFileSelect(files) {
+        if (files.length > 0) {
+            selectedFileObj = files[0];
+            selectedSampleId = null;
+            document.getElementById('selectedFileName').innerText = selectedFileObj.name;
+            document.getElementById('previewBar').style.display = 'flex';
+        }
+    }
+
+    function selectSample(sampleId, displayName) {
+        selectedSampleId = sampleId;
+        selectedFileObj = null;
+        document.getElementById('selectedFileName').innerText = displayName;
+        document.getElementById('previewBar').style.display = 'flex';
+    }
+
+    // Drag & Drop handlers
+    const dropZone = document.getElementById('dropZone');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+    ['dragenter', 'dragover'].forEach(name => dropZone.classList.add('dragover'));
+    ['dragleave', 'drop'].forEach(name => dropZone.classList.remove('dragover'));
+
+    dropZone.addEventListener('drop', (e) => {
+        let dt = e.dataTransfer;
+        let files = dt.files;
+        handleFileSelect(files);
+    });
+
+    function switchTab(index) {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+        tabs.forEach((tab, i) => {
+            if (i === index) {
+                tab.classList.add('active');
+                contents[i].classList.add('active');
+            } else {
+                tab.classList.remove('active');
+                contents[i].classList.remove('active');
+            }
+        });
+    }
+
+    async function runAnalysis() {
+        document.getElementById('previewBar').style.display = 'none';
+        document.getElementById('resultsContainer').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'block';
+
+        const formData = new FormData();
+        if (selectedSampleId) {
+            formData.append('sample_id', selectedSampleId);
+        } else if (selectedFileObj) {
+            formData.append('file', selectedFileObj);
+        } else {
+            alert('Please select or upload a file first');
+            document.getElementById('loadingSpinner').style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            document.getElementById('loadingSpinner').style.display = 'none';
+
+            if (data.status === 'success') {
+                document.getElementById('imgFivePanel').src = data.images.five_panel;
+                document.getElementById('imgBbox').src = data.images.bbox;
+                document.getElementById('imgSeg').src = data.images.seg;
+                document.getElementById('imgCombined').src = data.images.combined;
+
+                // Update Diagnosis Banner based on classification outcome
+                const banner = document.getElementById('diagnosisBanner');
+                const bannerIcon = document.getElementById('bannerIcon');
+                const bannerTitle = document.getElementById('bannerTitle');
+                const bannerDesc = document.getElementById('bannerDesc');
+
+                banner.className = 'alert-banner';
+                if (data.pred_class === 'UNRECOGNIZED_TUMOR') {
+                    banner.classList.add('warning');
+                    bannerIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                    bannerTitle.innerText = '⚠️ UNRECOGNIZED / ATYPICAL BRAIN TUMOR DETECTED';
+                    bannerDesc.innerText = 'An abnormal lesion was detected in this MRI scan, but it does NOT match the 3 standard trained tumor types (Glioma, Meningioma, Pituitary). Urgent in-person consultation with a neurologist or specialist doctor is advised for clinical biopsy/imaging.';
+                } else if (data.pred_class === 'NOTUMOR') {
+                    banner.classList.add('success');
+                    bannerIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                    bannerTitle.innerText = `🟢 HEALTHY BRAIN MRI — NO TUMOR DETECTED (${data.conf_percent}%)`;
+                    bannerDesc.innerText = 'Brain tissue appears normal with symmetrical cerebral parenchyma and no pathologic mass effect.';
+                } else {
+                    banner.classList.add('info');
+                    bannerIcon.innerHTML = '<i class="fa-solid fa-brain"></i>';
+                    bannerTitle.innerText = `🧠 CONFIRMED DIAGNOSIS: ${data.pred_class} (${data.conf_percent}%)`;
+                    bannerDesc.innerText = `High-confidence match with clinical radiological criteria for ${data.pred_class}.`;
+                }
+
+                // Format Clinical Report dynamically matching the predicted class
+                let reportFull = data.explanation_text || "Clinical diagnostic report ready.";
+                let parts = reportFull.split("👤 FOR PATIENTS & FAMILIES:");
+                let radText = parts[0] ? parts[0].trim() : reportFull;
+                let patText = parts[1] ? ("👤 FOR PATIENTS & FAMILIES:\n" + parts[1].trim()) : reportFull;
+
+                document.getElementById('radiologistReportText').innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.95rem; line-height: 1.6;">${radText}</pre>`;
+                document.getElementById('patientReportText').innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.95rem; line-height: 1.6;">${patText}</pre>`;
+
+                document.getElementById('resultsContainer').style.display = 'block';
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (err) {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            alert('Server error: ' + err.message);
+        }
+    }
+</script>
+
+</body>
+</html>

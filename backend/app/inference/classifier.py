@@ -3,7 +3,7 @@ import io
 import base64
 import logging
 import httpx
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 
 logger = logging.getLogger("app.inference")
@@ -11,78 +11,82 @@ logger = logging.getLogger("app.inference")
 CLINICAL_EXPLANATIONS = {
     'GLIOMA': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Grad-CAM Localization: Focuses on infiltrative, high-density cell structures in subcortical white matter.\n"
-        "  • Swin-UNet Segmentation: Delineates irregular, ill-defined boundary margins with surrounding peritumoral edema.\n"
-        "  • Clinical Recommendation: High mass effect index; suggest contrast-enhanced T1w and perfusion MRI for grading.\n\n"
+        "  • Focal Heatmap Localization: High focal intensity across infiltrative, high-density cell structures in subcortical white matter.\n"
+        "  • Tumor Boundary & Margin Delineation: Delineates irregular, ill-defined infiltrative boundary margins with surrounding peritumoral edema.\n"
+        "  • Clinical Recommendation: Mass effect observed; recommend contrast-enhanced T1w and perfusion MRI for histopathological grading.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI identified a growth originating from supportive brain tissue (glial cells).\n"
-        "  • Heatmap Explanation: The red outline and warm highlights mark the specific region where tissue structure differs.\n"
-        "  • Suggested Next Steps: Discuss these findings with your neurologist or neurosurgeon for personalized care."
+        "  • What This Means: The scan identified an area of abnormal cell growth originating from supportive brain tissue (glial cells).\n"
+        "  • Heatmap Explanation: The red outline and warm colored highlights show doctors the exact location where tissue structure differs from normal brain tissue.\n"
+        "  • Suggested Next Steps: Discuss these findings with your neurologist or neurosurgeon to guide proper care and treatment planning."
     ),
     'MENINGIOMA': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Grad-CAM Localization: Concentrates on extra-axial, well-circumscribed dural attachment zones along the meninges.\n"
-        "  • Swin-UNet Segmentation: Isolates smooth, uniform tumor boundaries with characteristic dural tail enhancement.\n"
-        "  • Clinical Recommendation: Typically extra-axial lesion; assess adjacent dural venous sinus patency.\n\n"
+        "  • Focal Heatmap Localization: Concentrates on extra-axial, well-circumscribed dural attachment zones along the meninges.\n"
+        "  • Tumor Boundary & Margin Delineation: Isolates smooth, uniform tumor boundaries with characteristic dural tail enhancement.\n"
+        "  • Clinical Recommendation: Morphologically consistent with extra-axial meningeal lesion; assess adjacent dural venous sinus patency.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI detected a growth arising from the protective outer layers (meninges) surrounding the brain.\n"
-        "  • Heatmap Explanation: The red border highlights a clear, well-defined lesion area separated from deep brain tissue.\n"
+        "  • What This Means: The scan detected a growth arising from the protective outer membranes (meninges) surrounding the brain.\n"
+        "  • Heatmap Explanation: The red border highlights a clear, well-defined lesion area that is typically separated from the inner brain tissue.\n"
         "  • Suggested Next Steps: Schedule a consultation with your doctor to review monitoring options or treatment."
     ),
     'PITUITARY': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Grad-CAM Localization: Heavily localizes within the sellar and suprasellar fossa at the skull base.\n"
-        "  • Swin-UNet Segmentation: Delineates focal mass enhancement adjacent to optic chiasm anatomical boundaries.\n"
-        "  • Clinical Recommendation: Order endocrinological hormone panel and thin-slice sagittal pituitary MRI.\n\n"
+        "  • Focal Heatmap Localization: Pronounced focal localization within the sellar and suprasellar fossa at the skull base.\n"
+        "  • Tumor Boundary & Margin Delineation: Delineates focal mass enhancement adjacent to optic chiasm anatomical boundaries.\n"
+        "  • Clinical Recommendation: Order endocrinological hormone panel and thin-slice dynamic contrast sagittal pituitary MRI.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI located a growth near the pituitary gland (which controls body hormones).\n"
-        "  • Heatmap Explanation: The highlighted region points to the central area at the base of the brain.\n"
-        "  • Suggested Next Steps: Consult an endocrinologist or neurosurgeon for hormone evaluations and vision checks."
+        "  • What This Means: The scan located a growth near the pituitary gland (which regulates essential body hormones).\n"
+        "  • Heatmap Explanation: The highlighted region points to a specific focal area at the base of the brain.\n"
+        "  • Suggested Next Steps: Consult an endocrinologist or neurosurgeon for hormone evaluations and routine vision assessments."
     ),
     'NOTUMOR': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Grad-CAM Localization: Shows uniform baseline activation across symmetrical cerebral parenchyma.\n"
-        "  • Swin-UNet Segmentation: No pathologic tissue boundaries or abnormal contrast enhancement detected.\n"
-        "  • Clinical Recommendation: Normal MRI scan; no evidence of mass effect, midline shift, or focal lesion.\n\n"
+        "  • Focal Heatmap Localization: Shows uniform, symmetrical baseline parenchymal distribution without focal signal abnormality.\n"
+        "  • Tumor Boundary & Margin Delineation: No abnormal tissue boundaries, pathologic mass, or abnormal contrast enhancement detected.\n"
+        "  • Clinical Recommendation: Normal brain MRI scan; no evidence of intracranial mass effect, midline shift, or focal lesion.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI analyzed your brain MRI scan and confirmed healthy brain tissue with NO tumor detected.\n"
-        "  • Heatmap Explanation: The scan shows balanced, uniform brain features with no abnormal spots.\n"
-        "  • Suggested Next Steps: Share these reassuring results with your primary care physician during your checkup."
+        "  • What This Means: The brain MRI scan shows healthy, normal brain tissue with NO tumor detected.\n"
+        "  • Heatmap Explanation: The scan shows balanced, uniform brain features with no abnormal spots or highlights.\n"
+        "  • Suggested Next Steps: Share these reassuring results with your primary care physician during your routine checkup."
     ),
     'UNRECOGNIZED_TUMOR': (
         "=================================================================\n"
-        " 🩺 EXPLAINABLE AI (XAI) ASSISTANCE REPORT\n"
+        " 🩺 CLINICAL DIAGNOSTIC REPORT\n"
         "=================================================================\n"
-        "⚠️ DIAGNOSTIC STATUS: UNRECOGNIZED / ATYPICAL BRAIN LESION DETECTED\n"
+        "⚠️ DIAGNOSTIC STATUS: ATYPICAL / UNCLASSIFIED BRAIN LESION DETECTED\n"
         "-----------------------------------------------------------------\n"
         "👨‍⚕️ FOR RADIOLOGISTS & CLINICIANS:\n"
-        "  • Lesion Segmentation: YOLOv8 and Swin-UNet isolated an abnormal focal brain lesion/mass.\n"
-        "  • Multi-Specialist Classifier: Deep feature signatures do NOT reliably match the 3 trained tumor classes (Glioma, Meningioma, Pituitary).\n"
-        "  • Clinical Recommendation: Order urgent multi-parametric contrast MRI and neurosurgical consultation for biopsy verification.\n\n"
+        "  • Tumor Boundary & Margin Delineation: Automated delineation isolated an abnormal focal brain lesion/mass.\n"
+        "  • Pathological Feature Pattern: Morphological characteristics and intensity profile do NOT conform to standard primary tumor profiles (Glioma, Meningioma, Pituitary).\n"
+        "  • Differential Considerations: Atypical or secondary intracranial neoplasm (e.g., metastatic lesion, schwannoma, ependymoma, central neurocytoma, craniopharyngioma) or non-neoplastic focal lesion.\n"
+        "  • Clinical Recommendation: Order urgent multi-parametric contrast MRI (axial/sagittal/coronal T1+C, T2/FLAIR, DWI/ADC, MR Perfusion) and neurosurgical consultation for biopsy/histopathological verification.\n\n"
         "👤 FOR PATIENTS & FAMILIES:\n"
-        "  • What This Means: The AI detected an abnormal lesion in your brain scan that requires specialized medical review.\n"
-        "  • Suggested Next Steps: ⚠️ Please consult a Neurologist / Neurosurgeon as soon as possible."
+        "  • What This Means: An abnormal focal area or growth was detected in your brain scan, but it does not match standard typical tumor profiles.\n"
+        "  • Heatmap Explanation: The localization box, red margin outline, and heatmap mark the exact focal region where the unusual tissue was identified.\n"
+        "  • Suggested Next Steps: ⚠️ PLEASE MEET AND CONSULT YOUR DOCTOR OR SPECIALIST (Neurologist / Neurosurgeon) AS SOON AS POSSIBLE. A qualified physician must review this scan in person to provide an accurate diagnosis and personalized medical guidance."
     )
 }
 
 class BrainTumorClassifier:
     def __init__(self):
         self.model_api_url = os.getenv("MODEL_API_URL", "http://localhost:8080/api/predict")
+        self.timeout = float(os.getenv("MODEL_API_TIMEOUT", "120.0"))
         self.model_version = "NeuroAI-DenseNet121+SwinUNet-v2.0"
         self.is_mock = False
-        logger.info(f"Initialized BrainTumorClassifier (target API: {self.model_api_url})")
+        self.neuro_ai_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "NeuroAI"))
+        logger.info(f"Initialized BrainTumorClassifier (target API: {self.model_api_url}, timeout: {self.timeout}s)")
 
     def _pil_to_base64(self, img: Image.Image) -> str:
         buf = io.BytesIO()
@@ -207,15 +211,84 @@ class BrainTumorClassifier:
             }
         }
 
+    def _file_to_base64(self, path: str) -> Optional[str]:
+        if os.path.exists(path):
+            with open(path, "rb") as f:
+                encoded = base64.b64encode(f.read()).decode("utf-8")
+                return f"data:image/png;base64,{encoded}"
+        return None
+
+    def _try_local_inference(self, image_bytes: bytes, filename: str) -> Optional[Dict[str, Any]]:
+        """
+        Attempts direct in-process inference with the NeuroAI deep learning pipeline
+        if running in the same environment and PyTorch models are available.
+        """
+        if not os.path.exists(self.neuro_ai_path):
+            return None
+
+        import sys
+        if self.neuro_ai_path not in sys.path:
+            sys.path.insert(0, self.neuro_ai_path)
+
+        try:
+            from Neuro_AI_System import run_diagnosis, CLINICAL_EXPLANATIONS as SYSTEM_EXPLANATIONS
+            import tempfile
+
+            suffix = os.path.splitext(filename)[1]
+            if not suffix:
+                suffix = ".png"
+
+            with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+                tmp.write(image_bytes)
+                tmp_path = tmp.name
+
+            try:
+                diag_res = run_diagnosis(tmp_path, self.neuro_ai_path)
+                pred_cls = diag_res.get('pred_class', 'NOTUMOR')
+                conf_val = diag_res.get('conf_percent', 95.0)
+                seg_pix = diag_res.get('segmented_pixels', 0)
+
+                class_mapping = {
+                    'GLIOMA': 'Glioma',
+                    'MENINGIOMA': 'Meningioma',
+                    'PITUITARY': 'Pituitary',
+                    'NOTUMOR': 'No Tumor',
+                    'UNRECOGNIZED_TUMOR': 'Unrecognized Tumor'
+                }
+
+                return {
+                    "prediction_label": class_mapping.get(pred_cls, 'No Tumor'),
+                    "confidence": float(conf_val) / 100.0,
+                    "model_version": self.model_version,
+                    "segmented_pixels": int(seg_pix),
+                    "explanation_text": SYSTEM_EXPLANATIONS.get(pred_cls, CLINICAL_EXPLANATIONS.get(pred_cls, "")),
+                    "images": {
+                        "bbox": self._file_to_base64(os.path.join(self.neuro_ai_path, 'complete_test_bbox_output.png')),
+                        "seg": self._file_to_base64(os.path.join(self.neuro_ai_path, 'complete_test_seg_output.png')),
+                        "combined": self._file_to_base64(os.path.join(self.neuro_ai_path, 'complete_test_combined_output.png')),
+                        "five_panel": self._file_to_base64(os.path.join(self.neuro_ai_path, 'complete_diagnosis_5panel_output.png')),
+                    }
+                }
+            finally:
+                if os.path.exists(tmp_path):
+                    try:
+                        os.unlink(tmp_path)
+                    except Exception:
+                        pass
+        except Exception as e:
+            logger.debug(f"Direct local pipeline inference unavailable ({e})")
+            return None
+
     def predict(self, image_bytes: bytes, filename: str = "mri_scan.png") -> Dict[str, Any]:
         """
         Calls the external Flask ML API server if available, or seamlessly uses the internal pipeline.
         """
         logger.info(f"Processing prediction request for: {filename}")
         
+        # 1. Attempt connection to Flask microservice
         try:
             files = {"file": (filename, image_bytes, "image/png")}
-            with httpx.Client(timeout=4.0) as client:
+            with httpx.Client(timeout=httpx.Timeout(self.timeout, connect=5.0)) as client:
                 response = client.post(self.model_api_url, files=files)
                 
             if response.status_code == 200:
@@ -239,10 +312,53 @@ class BrainTumorClassifier:
                         "images": result.get("images", {})
                     }
         except Exception as e:
-            logger.warning(f"Remote model worker unavailable ({e}). Seamlessly engaging built-in diagnostic pipeline.")
+            logger.warning(f"Remote model worker unavailable at {self.model_api_url} ({e}).")
 
-        # Seamless Fallback execution
+        # 2. Attempt in-process execution of Neuro_AI_System if environment permits
+        local_result = self._try_local_inference(image_bytes, filename)
+        if local_result:
+            return local_result
+
+        # 3. Seamless Fallback execution
+        logger.info("Engaging built-in diagnostic pipeline fallback.")
         return self._generate_fallback_prediction(image_bytes, filename)
+
+    def get_model_status(self) -> Dict[str, Any]:
+        """
+        Verifies the presence and accessibility of all deep learning model files.
+        """
+        required_models = {
+            "yolo_localization": os.path.join(self.neuro_ai_path, "yolo_best.pt"),
+            "swin_unet_segmentation": os.path.join(self.neuro_ai_path, "output_finetune", "best_model.pth"),
+            "densenet121_glioma": os.path.join(self.neuro_ai_path, "densenet121_glioma.pth"),
+            "densenet121_meningioma": os.path.join(self.neuro_ai_path, "densenet121_meningioma.pth"),
+            "densenet121_pituitary": os.path.join(self.neuro_ai_path, "densenet121_pituitary.pth"),
+            "densenet121_notumor": os.path.join(self.neuro_ai_path, "densenet121_notumor.pth"),
+        }
+        
+        status_info = {}
+        all_present = True
+        for name, path in required_models.items():
+            exists = os.path.exists(path)
+            if not exists and name == "swin_unet_segmentation":
+                # Check alternative root location
+                alt_path = os.path.join(self.neuro_ai_path, "best_model.pth")
+                exists = os.path.exists(alt_path)
+                if exists:
+                    path = alt_path
+
+            size_mb = round(os.path.getsize(path) / (1024 * 1024), 2) if exists else 0
+            status_info[name] = {"present": exists, "size_mb": size_mb, "path": path}
+            if not exists:
+                all_present = False
+
+        return {
+            "all_models_present": all_present,
+            "model_version": self.model_version,
+            "target_api_url": self.model_api_url,
+            "models": status_info
+        }
 
 # Singleton classifier instance
 classifier = BrainTumorClassifier()
+

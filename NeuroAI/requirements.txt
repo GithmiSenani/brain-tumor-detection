@@ -1,0 +1,11 @@
+torch>=2.0.0
+torchvision>=0.15.0
+ultralytics>=8.0.0
+flask>=2.3.0
+flask-cors>=4.0.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+pillow>=9.5.0
+matplotlib>=3.7.0
+h5py>=3.8.0
+timm>=0.9.0

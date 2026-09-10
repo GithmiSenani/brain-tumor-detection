@@ -16,8 +16,12 @@ def upload_models(repo_id="PramudithaN/brain-tumor-models", token=None):
 
     base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "NeuroAI")
     
+    swin_path = os.path.join(base_dir, "output_finetune", "best_model.pth")
+    if not os.path.exists(swin_path):
+        swin_path = os.path.join(base_dir, "best_model.pth")
+
     files_to_upload = [
-        ("best_model.pth", os.path.join(base_dir, "best_model.pth")),
+        ("best_model.pth", swin_path),
         ("yolo_best.pt", os.path.join(base_dir, "yolo_best.pt")),
         ("densenet121_glioma.pth", os.path.join(base_dir, "densenet121_glioma.pth")),
         ("densenet121_meningioma.pth", os.path.join(base_dir, "densenet121_meningioma.pth")),

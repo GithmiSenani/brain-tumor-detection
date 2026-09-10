@@ -84,6 +84,10 @@ def predict():
                 return jsonify({"status": "error", "message": "Empty file name"}), 400
 
             filename = file.filename
+            ext = os.path.splitext(filename)[1].lower()
+            if ext not in ['.jpg', '.jpeg', '.png']:
+                return jsonify({"status": "error", "message": "Unsupported file format. Please upload a standard brain MRI scan (.jpg, .jpeg, .png)."}), 400
+
             temp_dir = tempfile.mkdtemp()
             temp_file_path = os.path.join(temp_dir, filename)
             file.save(temp_file_path)

@@ -31,18 +31,18 @@ The Neuro AI engine integrates four deep learning and computer vision stages:
 ### 3. Swin-UNet Architecture (`extracted_pipeline/`)
 - Contains PyTorch implementations of Shifted Window Multi-Head Self-Attention (`W-MSA` / `SW-MSA`), Swin-UNet decoder layers, and YAML hyperparameter configurations (`configs/swin_base_patch4_window7_224_finetune.yaml`).
 
-### 4. Model Checkpoints
+### 4. Model Checkpoints (Production Weights)
 
-| Model File | Target Role | Size | Source |
+| Model File | Target Role | Size | Status |
 | :--- | :--- | :--- | :--- |
-| `best_model.pth` | Swin-UNet Semantic Segmentation | ~1.79 GB | Hugging Face Hub / Local |
-| `yolo_best.pt` | YOLOv8 Bounding Box Localization | ~22.5 MB | Hugging Face Hub / Local |
-| `densenet121_glioma.pth` | Glioma Specialist Classifier | ~30.5 MB | Hugging Face Hub / Local |
-| `densenet121_meningioma.pth` | Meningioma Specialist Classifier | ~30.5 MB | Hugging Face Hub / Local |
-| `densenet121_pituitary.pth` | Pituitary Specialist Classifier | ~30.5 MB | Hugging Face Hub / Local |
-| `densenet121_notumor.pth` | Normal Tissue Specialist Classifier | ~30.5 MB | Hugging Face Hub / Local |
+| `output_finetune/best_model.pth` (or `best_model.pth`) | Swin-UNet Semantic Segmentation | ~1.79 GB | Installed Locally |
+| `yolo_best.pt` | YOLOv8 Bounding Box Localization | ~22.5 MB | Installed Locally |
+| `densenet121_glioma.pth` | Glioma Specialist Classifier | ~30.5 MB | Installed Locally |
+| `densenet121_meningioma.pth` | Meningioma Specialist Classifier | ~30.5 MB | Installed Locally |
+| `densenet121_pituitary.pth` | Pituitary Specialist Classifier | ~30.5 MB | Installed Locally |
+| `densenet121_notumor.pth` | Normal Tissue Specialist Classifier | ~30.5 MB | Installed Locally |
 
-*Remote repository: `PramudithaN/brain-tumor-models` on Hugging Face Model Hub.*
+*See `AI_BACKEND_INTEGRATION_GUIDE.md` for full technical specifications, JSON response contracts, Grad-CAM details, and API proxies.*
 
 ---
 

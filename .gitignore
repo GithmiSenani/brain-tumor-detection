@@ -34,3 +34,8 @@ Thumbs.db
 *.pth
 *.pt
 *.zip
+
+# Temporary Integration Bundles & Archives
+NeuroAI_AI_Integration_Package/
+NeuroAI_Full_Production_Bundle/
+
